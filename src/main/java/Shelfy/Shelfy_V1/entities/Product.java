@@ -1,0 +1,119 @@
+package Shelfy.Shelfy_V1.entities;
+
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
+
+@Entity
+public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Name must not be blank")
+    private String name;
+
+    @NotBlank(message = "Brand name must not be blank")
+    private String brand;
+
+    @NotBlank(message = "Unit must not be blank")
+    private String unit;
+
+    @NotNull(message = "Price must not be blank")
+    private float defaultPrice;
+
+    @NotBlank(message = "Url must not be blank")
+    private String imageUrl;
+
+    private boolean isActive;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime lastUpdate;
+
+    public Product() {
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.lastUpdate = LocalDateTime.now();
+    }
+
+    public Product(String name, String brand, String unit, float defaultPrice, String imageUrl) {
+        this.name = name;
+        this.brand = brand;
+        this.unit = unit;
+        this.defaultPrice = defaultPrice;
+        this.imageUrl = imageUrl;
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.lastUpdate = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public float getDefaultPrice() {
+        return defaultPrice;
+    }
+
+    public void setDefaultPrice(float defaultPrice) {
+        this.defaultPrice = defaultPrice;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(LocalDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+}
