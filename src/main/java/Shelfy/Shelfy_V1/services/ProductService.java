@@ -36,6 +36,7 @@ public class ProductService {
     public void updateProduct(Long id, Product updatedProduct) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
+
         product.setName(updatedProduct.getName());
         product.setActive(updatedProduct.isActive());
         product.setBrand(updatedProduct.getBrand());

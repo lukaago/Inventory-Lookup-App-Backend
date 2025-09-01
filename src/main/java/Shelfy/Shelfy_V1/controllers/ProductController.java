@@ -21,9 +21,11 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        productService.addProduct(product);
-        return new ResponseEntity<>(product, HttpStatus.CREATED);
+    public ResponseEntity<List<Product>> addProduct(@RequestBody List<Product> products) {
+        for (Product product : products) {
+            productService.addProduct(product);
+        }
+        return new ResponseEntity<>(products, HttpStatus.CREATED);
     }
 
     @GetMapping
