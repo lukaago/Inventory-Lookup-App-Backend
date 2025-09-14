@@ -40,7 +40,6 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) BigDecimal priceMin,
             @RequestParam(required = false) BigDecimal priceMax,
-            @RequestParam(required = false) Boolean inStock,
             Pageable pageable // supports ?page=0&size=20&sort=price,asc
     ) {
         return productService.findFiltered(name, brand, priceMin, priceMax, recommended, pageable);
