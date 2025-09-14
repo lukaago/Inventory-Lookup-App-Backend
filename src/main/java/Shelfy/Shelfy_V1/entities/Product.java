@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,12 +25,15 @@ public class Product {
     private String unit;
 
     @NotNull(message = "Price must not be blank")
-    private float defaultPrice;
+    private BigDecimal defaultPrice;
 
     @NotBlank(message = "Url must not be blank")
     private String imageUrl;
 
     private boolean isActive;
+
+    @Column(name = "is_recommended", nullable = false)
+    private boolean recommended = false;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -38,17 +42,19 @@ public class Product {
 
     public Product() {
         this.isActive = true;
+        this.recommended = true;
         this.createdAt = LocalDateTime.now();
         this.lastUpdate = LocalDateTime.now();
     }
 
-    public Product(String name, String brand, String unit, float defaultPrice, String imageUrl) {
+    public Product(String name, String brand, String unit, BigDecimal defaultPrice, String imageUrl, boolean recommended) {
         this.name = name;
         this.brand = brand;
         this.unit = unit;
         this.defaultPrice = defaultPrice;
         this.imageUrl = imageUrl;
         this.isActive = true;
+        this.recommended = recommended;
         this.createdAt = LocalDateTime.now();
         this.lastUpdate = LocalDateTime.now();
     }
@@ -81,11 +87,11 @@ public class Product {
         this.unit = unit;
     }
 
-    public float getDefaultPrice() {
+    public BigDecimal getDefaultPrice() {
         return defaultPrice;
     }
 
-    public void setDefaultPrice(float defaultPrice) {
+    public void setDefaultPrice(BigDecimal defaultPrice) {
         this.defaultPrice = defaultPrice;
     }
 
@@ -115,5 +121,13 @@ public class Product {
 
     public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public boolean isRecommended() {
+        return recommended;
+    }
+
+    public void setRecommended(boolean newRecommended) {
+        recommended = newRecommended;
     }
 }
