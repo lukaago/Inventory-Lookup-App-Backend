@@ -33,6 +33,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.CREATED);
     }
 
+    @Deprecated
     @GetMapping
     public Page<ProductDto> list(
             @RequestParam(required = false) String name,
@@ -64,11 +65,21 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    @Deprecated
     @GetMapping("/search")
-    public List<Product> getProductsByName(@RequestParam String name) {
-        return productService.findProductsByName(name);
+    public List<Product> getProductsByName(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Boolean recommended,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) BigDecimal priceMin,
+            @RequestParam(required = false) BigDecimal priceMax,
+            org.springframework.data.domain.Sort sort
+    ) {
+        return productService.findProductsByName(name, brand, priceMin, priceMax, recommended, sort);
+    }
+
+    @GetMapping("/brands")
+    public List<String> getAllUniqueBrands() {
+        return productService.getAllUniqueBrands();
     }
 
     @Deprecated
