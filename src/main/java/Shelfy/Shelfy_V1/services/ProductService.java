@@ -61,11 +61,16 @@ public class ProductService {
         return p; // managed entity; flush by TX end
     }
 
-    public List<Product> findProductsByName(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name);
+    public List<Product> findProductsByName(String name, String brand,
+                                            BigDecimal priceMin, BigDecimal priceMax,
+                                            Boolean recommended,
+                                            org.springframework.data.domain.Sort sort) {
+        return productRepository.findByNameContainingIgnoreCase(name, brand, priceMin, priceMax, recommended, sort);
     }
 
-
+    public List<String> getAllUniqueBrands() {
+        return productRepository.findAllUniqueBrands();
+    }
 
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
