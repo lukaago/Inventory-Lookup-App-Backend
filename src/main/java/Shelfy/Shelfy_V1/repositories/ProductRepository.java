@@ -18,12 +18,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   SELECT p FROM Product p
   WHERE (:name IS NULL OR LOWER(p.name) LIKE CONCAT('%', :name, '%'))
     AND (:recommended IS NULL OR p.recommended = :recommended)
-    AND (:brand IS NULL OR p.brand = :brand)
+    AND ((:brands) IS NULL OR p.brand IN (:brands))
     AND (:priceMin IS NULL OR p.defaultPrice >= :priceMin)
     AND (:priceMax IS NULL OR p.defaultPrice <= :priceMax)
 """)
     List<Product> findByNameContainingIgnoreCase(@Param("name") String name,
-                                                 @Param("brand") String brand,
+                                                 @Param("brands") List<String> brands,
                                                  @Param("priceMin") BigDecimal priceMin,
                                                  @Param("priceMax") BigDecimal priceMax,
                                                  @Param("recommended") Boolean recommended,

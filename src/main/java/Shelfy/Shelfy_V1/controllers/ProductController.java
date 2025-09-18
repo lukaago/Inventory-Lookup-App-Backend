@@ -69,13 +69,14 @@ public class ProductController {
     public List<Product> getProductsByName(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Boolean recommended,
-            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) List<String> brand,
             @RequestParam(required = false) BigDecimal priceMin,
             @RequestParam(required = false) BigDecimal priceMax,
             org.springframework.data.domain.Sort sort
     ) {
         return productService.findProductsByName(name, brand, priceMin, priceMax, recommended, sort);
     }
+
 
     @GetMapping("/brands")
     public List<String> getAllUniqueBrands() {

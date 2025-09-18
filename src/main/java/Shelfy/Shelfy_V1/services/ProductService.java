@@ -61,11 +61,11 @@ public class ProductService {
         return p; // managed entity; flush by TX end
     }
 
-    public List<Product> findProductsByName(String name, String brand,
+    public List<Product> findProductsByName(String name, List<String> brands,
                                             BigDecimal priceMin, BigDecimal priceMax,
                                             Boolean recommended,
                                             org.springframework.data.domain.Sort sort) {
-        return productRepository.findByNameContainingIgnoreCase(name, brand, priceMin, priceMax, recommended, sort);
+        return productRepository.findByNameContainingIgnoreCase(name, brands, priceMin, priceMax, recommended, sort);
     }
 
     public List<String> getAllUniqueBrands() {
