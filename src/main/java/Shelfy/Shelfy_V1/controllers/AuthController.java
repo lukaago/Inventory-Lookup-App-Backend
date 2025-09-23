@@ -44,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public Map<String, String> refresh(@RequestBody TokenRefreshRequest req) {
-        var claims = jwtService.parse(req.refreshToken()).getBody();
+        var claims = jwtService.parse(req.refreshToken()).getPayload();
         if (!"refresh".equals(claims.get("typ"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
