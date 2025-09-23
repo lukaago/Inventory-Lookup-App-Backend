@@ -1001,3 +1001,8 @@ INSERT INTO products (id, name, brand, unit, default_price, image_url, is_active
 INSERT INTO products (id, name, brand, unit, default_price, image_url, is_active, is_recommended) VALUES (1001, 'Laundry Detergent TEST', 'CleanMax', 'pack', 13.47, 'https://picsum.photos/seed/1001/500', true, false);
 
 
+INSERT INTO users (username, password, enabled)
+VALUES ('admin', '$2a$12$VkD/C6yrAYuDcRbtYfWXlOcYfA63XNQtiwbewXGclYLJ3m3cbNcwO', true)
+ON CONFLICT (username) DO NOTHING;
+
+SELECT setval('products_seq', (SELECT MAX(id) FROM products));
