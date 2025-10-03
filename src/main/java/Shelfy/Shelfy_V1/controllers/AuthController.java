@@ -67,6 +67,29 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)
+                .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .build();
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<Void> refresh(@RequestBody TokenRefreshRequest req) {
         var claims = jwtService.parse(req.refreshToken()).getPayload();
