@@ -48,14 +48,14 @@ public class AuthController {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 15) // 15 Minuten
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 60 * 24 * 7) // 7 Tage
@@ -71,14 +71,14 @@ public class AuthController {
     public ResponseEntity<Void> logout() {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(0)
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(0)
@@ -104,14 +104,14 @@ public class AuthController {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 15)
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 60 * 24 * 7)
