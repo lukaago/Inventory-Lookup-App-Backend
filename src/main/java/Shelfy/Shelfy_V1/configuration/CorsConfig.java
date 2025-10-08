@@ -16,7 +16,8 @@ public class CorsConfig {
         var cors = new CorsConfiguration();
         cors.setAllowedOrigins(List.of("http://localhost:3000"));
         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        cors.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        cors.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cookie"));
+        cors.setExposedHeaders(List.of("Set-Cookie"));
         cors.setAllowCredentials(true);
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cors);
