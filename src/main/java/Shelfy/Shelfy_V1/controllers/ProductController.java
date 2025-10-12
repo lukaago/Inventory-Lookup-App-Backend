@@ -65,8 +65,9 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        productService.updateProduct(id, product);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+
+        Product updated = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updated);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -76,34 +77,34 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Deprecated
-    @GetMapping
-    public Page<ProductDto> list(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Boolean recommended,
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) BigDecimal priceMin,
-            @RequestParam(required = false) BigDecimal priceMax,
-            Pageable pageable // supports ?page=0&size=20&sort=price,asc
-    ) {
-        return productService.findFiltered(name, brand, priceMin, priceMax, recommended, pageable);
-    }
-
-    @Deprecated
-    @GetMapping("/product-{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
-
-    @Deprecated
-    @GetMapping("/all")
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
-    }
-
-    @Deprecated
-    @GetMapping("/recommended")
-    public List<Product> getRecommendedProducts() {
-        return productService.getRecommendedProducts();
-    }
+//    @Deprecated
+//    @GetMapping
+//    public Page<ProductDto> list(
+//            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) Boolean recommended,
+//            @RequestParam(required = false) String brand,
+//            @RequestParam(required = false) BigDecimal priceMin,
+//            @RequestParam(required = false) BigDecimal priceMax,
+//            Pageable pageable // supports ?page=0&size=20&sort=price,asc
+//    ) {
+//        return productService.findFiltered(name, brand, priceMin, priceMax, recommended, pageable);
+//    }
+//
+//    @Deprecated
+//    @GetMapping("/product-{id}")
+//    public Product getProductById(@PathVariable Long id) {
+//        return productService.getProductById(id);
+//    }
+//
+//    @Deprecated
+//    @GetMapping("/all")
+//    public List<Product> getAllProducts() {
+//        return productService.getAllProducts();
+//    }
+//
+//    @Deprecated
+//    @GetMapping("/recommended")
+//    public List<Product> getRecommendedProducts() {
+//        return productService.getRecommendedProducts();
+//    }
 }
