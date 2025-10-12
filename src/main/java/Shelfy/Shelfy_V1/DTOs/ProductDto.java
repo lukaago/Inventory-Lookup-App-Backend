@@ -11,11 +11,12 @@ public record ProductDto(
     String unit,
     BigDecimal defaultPrice,
     String imageUrl,
-    Boolean recommended)
+    boolean recommended,
+    boolean isActive)
     {
         public static ProductDto from(Product p) {
             return new ProductDto(
-                    p.getId(), p.getName(), p.getBrand(), p.getUnit(), p.getDefaultPrice(), p.getImageUrl(), p.isRecommended()
+                    p.getId(), p.getName(), p.getBrand(), p.getUnit(), p.getDefaultPrice(), p.getImageUrl(), p.isRecommended(), p.isActive()
             );
         }
 }
