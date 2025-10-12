@@ -32,10 +32,11 @@ public class Product {
     @NotBlank(message = "Url must not be blank")
     private String imageUrl;
 
-    private boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private boolean active;
 
     @Column(name = "is_recommended", nullable = false)
-    private boolean recommended = false;
+    private boolean recommended;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -43,19 +44,17 @@ public class Product {
     private LocalDateTime lastUpdate;
 
     public Product() {
-        this.isActive = true;
-        this.recommended = true;
         this.createdAt = LocalDateTime.now();
         this.lastUpdate = LocalDateTime.now();
     }
 
-    public Product(String name, String brand, String unit, BigDecimal defaultPrice, String imageUrl, boolean recommended) {
+    public Product(String name, String brand, String unit, BigDecimal defaultPrice, String imageUrl, boolean active, boolean recommended) {
         this.name = name;
         this.brand = brand;
         this.unit = unit;
         this.defaultPrice = defaultPrice;
         this.imageUrl = imageUrl;
-        this.isActive = true;
+        this.active = active;
         this.recommended = recommended;
         this.createdAt = LocalDateTime.now();
         this.lastUpdate = LocalDateTime.now();
@@ -106,11 +105,11 @@ public class Product {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public LocalDateTime getCreatedAt() {
