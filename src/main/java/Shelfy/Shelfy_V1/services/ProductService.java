@@ -42,7 +42,7 @@ public class ProductService {
 
     public Page<ProductDto> findFiltered(String name, String brand,
                                          BigDecimal priceMin, BigDecimal priceMax,
-                                         Boolean recommended, Pageable pageable) {
+                                         boolean recommended, Pageable pageable) {
         name  = norm(name);
         brand = (brand == null || brand.isBlank()) ? null : brand; // exact match for brand currently
         Page<Product> page = productRepository.findFiltered(name, brand, priceMin, priceMax, recommended, pageable);
@@ -76,7 +76,7 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public void updateProduct(Long id, Product updatedProduct) {
+    public Product updateProduct(Long id, Product updatedProduct) {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
 
@@ -86,8 +86,9 @@ public class ProductService {
         product.setLastUpdate(LocalDateTime.now());
         product.setUnit(updatedProduct.getUnit());
         product.setDefaultPrice(updatedProduct.getDefaultPrice());
+        product.setRecommended(updatedProduct.isRecommended());
         product.setImageUrl(updatedProduct.getImageUrl());
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 
     public void removeProduct(Long id) {

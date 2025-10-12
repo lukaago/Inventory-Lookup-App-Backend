@@ -45,7 +45,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("brand") String brand,
             @Param("priceMin") BigDecimal priceMin,
             @Param("priceMax") BigDecimal priceMax,
-            @Param("recommended") Boolean recommended,
+            @Param("recommended") boolean recommended,
             Pageable pageable);
 
     @Query("SELECT DISTINCT p.brand FROM Product p")
