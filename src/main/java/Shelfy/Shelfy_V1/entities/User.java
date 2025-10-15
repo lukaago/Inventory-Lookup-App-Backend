@@ -2,6 +2,8 @@ package Shelfy.Shelfy_V1.entities;
 
 import jakarta.persistence.*;
 
+
+// User entity representing a user in the system.
 @Entity
 @Table(name = "users")
 public class User {

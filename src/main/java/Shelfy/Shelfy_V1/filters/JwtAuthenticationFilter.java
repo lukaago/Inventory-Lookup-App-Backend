@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 
+
+// Filter that intercepts HTTP requests to authenticate users based on JWT tokens.
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -28,48 +30,60 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
+    // Extracts and validates the JWT token from the request,
+    // setting the authentication in the security context if valid.
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+        // Extract token from Authorization header or cookies
         String token = null;
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        // Check if the Authorization header contains a Bearer token
         if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);
-        } else if (request.getCookies() != null) {
-            for (var cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
+        } else if (request.getCookies() != null) { // Fallback to cookies if no Authorization header
+            for (var cookie : request.getCookies()) { // Look for the accessToken cookie
+                if ("accessToken".equals(cookie.getName())) { // Found the accessToken cookie
+                    token = cookie.getValue(); // Extract the token value
                     break;
                 }
             }
         }
 
+        // If a token is found, validate and parse it
         if (token != null) {
             try {
                 var jws = jwtService.parse(token);
                 var body = jws.getPayload();
                 String username = body.getSubject();
+                // Extract roles from the token claims
                 @SuppressWarnings("unchecked")
-                List<String> roles = body.get("roles", List.class); // kommt als List<?> aus dem JWT
-
-                // explizit typisieren, damit es zu UsernamePasswordAuthenticationToken passt
+                List<String> roles = body.get("roles", List.class);
+                // Map roles to Spring Security authorities
                 List<SimpleGrantedAuthority> authorities =
+                        // Handle case where roles might be null
                         (roles == null)
+                                // No roles, assign empty list of authorities
                                 ? Collections.<SimpleGrantedAuthority>emptyList()
+                                // Map each role to a SimpleGrantedAuthority
                                 : roles.stream()
                                 .map(SimpleGrantedAuthority::new)
                                 .collect(Collectors.toList());
+                // Create an authentication token and set it in the security context
                 var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                // Set the authentication in the security context
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (JwtException ex) {
                 // Do nothing if token is invalid
             }
         }
+        // Continue the filter chain
         filterChain.doFilter(request, response);
     }
 
+    // Skip filtering for login endpoint
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();

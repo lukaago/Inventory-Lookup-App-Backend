@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
+// Product entity representing a product in the system.
 @Entity
 @Table(name = "products")
 public class Product {

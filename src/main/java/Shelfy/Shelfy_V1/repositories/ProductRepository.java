@@ -13,7 +13,12 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.util.List;
 
+
+// Repository interface for managing Product entities.
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    // Find products by name containing a specified string (case-insensitive) with
+    // optional filters for brand, price range, and recommendation status.
     @Query("""
   SELECT p FROM Product p
   WHERE (:name IS NULL OR LOWER(p.name) LIKE CONCAT('%', :name, '%'))
@@ -29,9 +34,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                                  @Param("recommended") Boolean recommended,
                                                  org.springframework.data.domain.Sort sort);
 
+    // Find all products that are marked as recommended.
     List<Product> findByRecommendedTrue();
-    List<Product> findByNameContainingIgnoreCaseAndRecommendedTrue(String name);
 
+    // Find products with multiple optional filters and pagination support.
     @Query("""
   SELECT p FROM Product p
   WHERE (:name IS NULL OR LOWER(p.name) LIKE CONCAT('%', :name, '%'))
@@ -48,6 +54,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("recommended") boolean recommended,
             Pageable pageable);
 
+    // Retrieve a list of all unique product brands.
     @Query("SELECT DISTINCT p.brand FROM Product p")
     List<String> findAllUniqueBrands();
 }

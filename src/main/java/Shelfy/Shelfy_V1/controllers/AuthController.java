@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.Map;
 
-
+// Controller for handling authentication-related endpoints.
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -37,21 +37,31 @@ public class AuthController {
         this.users = userDetailsService;
     }
 
+    // Endpoint for user login. Authenticates the user and returns JWT tokens in HttpOnly cookies.
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest req) {
+        // Authenticate the user using the provided username and password
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.username(), req.password()));
+        // If authentication is successful, generate JWT tokens
         var user = (UserDetails) auth.getPrincipal();
         var roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         String access = jwtService.generateAccessToken(user.getUsername(), roles);
         String refresh = jwtService.generateRefreshToken(user.getUsername());
 
+        // Create HttpOnly cookies for the access and refresh tokens
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
+                // HttpOnly cookie to prevent JavaScript access
                 .httpOnly(true)
+                // In production, set to true to ensure cookies are only sent over HTTPS
                 .secure(false)
+                // Cookie valid for the entire site
                 .path("/")
+                // Mititate CSRF risks
                 .sameSite("Lax")
+                // Access token valid for 15 minutes
                 .maxAge(60 * 15) // 15 Minuten
+                // Build the cookie
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
@@ -61,14 +71,17 @@ public class AuthController {
                 .maxAge(60 * 60 * 24 * 7) // 7 Tage
                 .build();
 
+        // Return the cookies in the response headers
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .build();
     }
 
+    // Endpoint for user logout. Clears the JWT cookies.
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
+        // Clear the cookies by setting their maxAge to 0
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(false)
@@ -90,12 +103,15 @@ public class AuthController {
                 .build();
     }
 
+    // Endpoint for refreshing JWT tokens using a valid refresh token.
     @PostMapping("/refresh")
     public ResponseEntity<Void> refresh(@RequestBody TokenRefreshRequest req) {
+        // Validate the provided refresh token
         var claims = jwtService.parse(req.refreshToken()).getPayload();
         if (!"refresh".equals(claims.get("typ"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
+        // Generate new access and refresh tokens
         String username = claims.getSubject();
         var user = users.loadUserByUsername(username);
         var roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
@@ -123,11 +139,14 @@ public class AuthController {
                 .build();
     }
 
+    // Endpoint to get information about the currently authenticated user.
     @GetMapping("/me")
     public ResponseEntity<?> me(@CookieValue(name = "accessToken", required = false) String accessToken) {
+        // If no access token is provided, return 401 Unauthorized
         if (accessToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No access token");
         }
+        // Parse and validate the access token
         try {
             var claims = jwtService.parse(accessToken).getPayload();
             String username = claims.getSubject();
@@ -142,6 +161,7 @@ public class AuthController {
         }
     }
 
+    // Record classes for login and token refresh requests
     public record LoginRequest(String username, String password) {}
     public record TokenRefreshRequest(String refreshToken) {}
 
