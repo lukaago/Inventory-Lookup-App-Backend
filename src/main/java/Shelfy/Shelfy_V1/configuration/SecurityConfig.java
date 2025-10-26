@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/me").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers("/actuator/**", "/api/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Add JWT authentication filter before the username-password authentication filter
