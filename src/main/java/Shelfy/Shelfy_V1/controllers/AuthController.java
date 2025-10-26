@@ -54,7 +54,7 @@ public class AuthController {
                 // HttpOnly cookie to prevent JavaScript access
                 .httpOnly(true)
                 // In production, set to true to ensure cookies are only sent over HTTPS
-                .secure(false)
+                .secure(true)
                 // Cookie valid for the entire site
                 .path("/")
                 // Mititate CSRF risks
@@ -65,7 +65,7 @@ public class AuthController {
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 60 * 24 * 7) // 7 Tage
@@ -84,14 +84,14 @@ public class AuthController {
         // Clear the cookies by setting their maxAge to 0
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(0)
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(0)
@@ -105,9 +105,10 @@ public class AuthController {
 
     // Endpoint for refreshing JWT tokens using a valid refresh token.
     @PostMapping("/refresh")
-    public ResponseEntity<Void> refresh(@RequestBody TokenRefreshRequest req) {
+    public ResponseEntity<Void> refresh(@CookieValue(name="refreshToken", required=false) String token) {
         // Validate the provided refresh token
-        var claims = jwtService.parse(req.refreshToken()).getPayload();
+        if (token == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        var claims = jwtService.parse(token).getPayload();
         if (!"refresh".equals(claims.get("typ"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
@@ -120,14 +121,14 @@ public class AuthController {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 15)
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(60 * 60 * 24 * 7)
