@@ -21,9 +21,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // optional filters for brand, price range, and recommendation status.
     @Query("""
   SELECT p FROM Product p
-  WHERE (:name IS NULL OR LOWER(p.name) LIKE CONCAT('%', :name, '%'))
+  WHERE (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE CONCAT('%', LOWER(CAST(:name AS string)), '%'))
     AND (:recommended IS NULL OR p.recommended = :recommended)
-    AND ((:brands) IS NULL OR p.brand IN (:brands))
+    AND (:brands IS NULL OR p.brand IN :brands)
     AND (:priceMin IS NULL OR p.defaultPrice >= :priceMin)
     AND (:priceMax IS NULL OR p.defaultPrice <= :priceMax)
 """)

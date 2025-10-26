@@ -74,8 +74,10 @@ public class ProductService {
                                             Boolean recommended,
                                             org.springframework.data.domain.Sort sort) {
         // Normalize the name parameter for case-insensitive search
-        name = (name == null || name.isBlank()) ? null : name.toLowerCase(java.util.Locale.ROOT);
-        return productRepository.findByNameContainingIgnoreCase(name, brands, priceMin, priceMax, recommended, sort);
+        String normName = (name == null || name.isBlank()) ? null : name.trim();
+        // Use null for empty brands so the JPQL (:brands IS NULL OR p.brand IN :brands) branch works
+        List<String> normBrands = (brands == null || brands.isEmpty()) ? null : brands;
+        return productRepository.findByNameContainingIgnoreCase(normName, normBrands, priceMin, priceMax, recommended, sort);
     }
 
     // Retrieve a list of all unique product brands.
