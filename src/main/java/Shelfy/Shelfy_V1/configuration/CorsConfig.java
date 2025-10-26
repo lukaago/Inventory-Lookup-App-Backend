@@ -18,8 +18,8 @@ public class CorsConfig {
         // Define CORS configuration
         var cors = new CorsConfiguration();
         // Set allowed origins, methods, headers, and other settings
-        cors.setAllowedOrigins(List.of("http://localhost:3000"));
-        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        cors.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000", "https://inventory-index.com", "https://www.inventory-index.com"));
+        cors.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS","HEAD"));
         cors.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cookie"));
         cors.setExposedHeaders(List.of("Set-Cookie"));
         cors.setAllowCredentials(true);
