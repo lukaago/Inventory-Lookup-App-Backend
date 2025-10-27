@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Set up Temurin JDK 24
-        uses: actions/setup-java@4
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '24'
