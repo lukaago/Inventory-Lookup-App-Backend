@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Set up Temurin JDK 24
-        uses: actions/setup-java@24
+        uses: actions/setup-java@4
         with:
           distribution: 'temurin'
           java-version: '24'
@@ -37,6 +37,7 @@ jobs:
         run: mvn -B -DskipTests package
 
       - name: Configure AWS Credentials (OIDC)
+        if: github.event_name != 'pull_request'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
@@ -49,11 +50,11 @@ jobs:
       - name: Set image tags
         id: vars
         run: |
-          SHA_TAG=${GUTHUB_SHA::7}
+          SHA_TAG=${GITHUB_SHA::7}
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            VERSION_TAG="${GITHUB_REF_TAG}"
+            VERSION_TAG="${GITHUB_REF_NAME}"
           else
-            VERION_TAG="latest"
+            VERSION_TAG="latest"
           fi
           echo "sha_tag=$SHA_TAG" >> $GITHUB_OUTPUT
           echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
@@ -72,7 +73,7 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.version_tag }}
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.sha_tag }}
           cache-from: type=gha
-          cache-to: type=gha, mode=max
+          cache-to: type=gha,mode=max
 
       - name: Output image URIs
         run: |
