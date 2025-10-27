@@ -64,6 +64,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Build only for PRs (no push, no AWS)
       - name: Build (no push on PRs)
         if: github.event_name == 'pull_request'
         uses: docker/build-push-action@v6
@@ -75,6 +76,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Build & push versioned + SHA tags (no "latest" here)
       - name: Build and push (linux/amd64)
         if: github.event_name != 'pull_request'
         id: buildpush
@@ -97,3 +99,42 @@ jobs:
           echo "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.version_tag }}"
           echo "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.sha_tag }}"
           echo "Digest: ${{ steps.buildpush.outputs.digest }}"
+
+      # Repoint `latest` by delete-then-put (works with tag immutability)
+      - name: Repoint latest to new image (delete then put)
+        if: github.event_name != 'pull_request' && (github.ref_type == 'branch' && github.ref_name == 'main' || github.ref_type == 'tag')
+        env:
+          REPO: ${{ env.ECR_REPOSITORY }}
+          REGION: ${{ env.AWS_REGION }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          NEW_TAG: ${{ steps.vars.outputs.version_tag }}
+        run: |
+          set -euo pipefail
+
+          echo "Fetching manifest for $NEW_TAG..."
+          MANIFEST=$(aws ecr batch-get-image \
+            --repository-name "$REPO" \
+            --region "$REGION" \
+            --image-ids imageTag="$NEW_TAG" \
+            --query 'images[0].imageManifest' \
+            --output text)
+
+          if [[ "$MANIFEST" == "None" || -z "$MANIFEST" ]]; then
+            echo "ERROR: Could not fetch manifest for $NEW_TAG"
+            exit 1
+          fi
+
+          echo "Deleting existing :latest tag (if present)..."
+          aws ecr batch-delete-image \
+            --repository-name "$REPO" \
+            --region "$REGION" \
+            --image-ids imageTag=latest || true
+
+          echo "Tagging new image as :latest..."
+          aws ecr put-image \
+            --repository-name "$REPO" \
+            --region "$REGION" \
+            --image-tag latest \
+            --image-manifest "$MANIFEST"
+
+          echo "latest now points to: $REGISTRY/$REPO:latest"
