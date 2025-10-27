@@ -37,6 +37,7 @@ public class AuthController {
         this.users = userDetailsService;
     }
 
+    // Cookies are sameSite=lax such that the frontend is forced to go through a proxy to keep the cookies during site changes
     // Endpoint for user login. Authenticates the user and returns JWT tokens in HttpOnly cookies.
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest req) {
