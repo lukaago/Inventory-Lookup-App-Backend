@@ -44,6 +44,7 @@ public class ProductController {
         return productService.findProductsByName(name, brand, priceMin, priceMax, recommended, sort);
     }
 
+    // test comment
 
     @GetMapping("/brands")
     public List<String> getAllUniqueBrands() {
